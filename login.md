@@ -1,0 +1,1 @@
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhODdiN2NmZmI5NGI1OWYyNDhlMDhiMiIsImVtYWlsIjoiamhvbmllcmd1dGllcnJlejEyM0BnYW1pbC5jb20iLCJpYXQiOjE3ODcyODAxOTEsImV4cCI6MTc4NzM2NjU5MX0.ZC4cPAXtcOSXHJRTTi9U-MUcqDdy5O8_6T4-FqAqlr4","nombre":"jonier gutierrez"}
