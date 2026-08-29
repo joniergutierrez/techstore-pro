@@ -19,6 +19,8 @@ router.post('/registro', async (req, res) => {
 
         // guardar el ususario con la contraseña encriptada
         const usuario = await Usuario.create({ nombre, email, password: hash, rol });
+        console.log (rol)
+        
 
         res.status(201).json({ mensaje: 'usuario creado correctamente', id: usuario._id });
     } catch (err) {
