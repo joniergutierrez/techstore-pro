@@ -8,7 +8,7 @@ const router  = express.Router();
 //2 POST crear cuenta
 router.post('/registro', async (req, res) => {
     try {
-        const { nombre, email, password, rol } = req.body;
+        const { nombre, email, departamento, municipio, password, rol } = req.body;
 
         // verificar que el email no exista ya
         const existe = await Usuario.findOne({ email });
@@ -18,7 +18,7 @@ router.post('/registro', async (req, res) => {
         const hash = await bcrypt.hash(password, 10);
 
         // guardar el ususario con la contraseña encriptada
-        const usuario = await Usuario.create({ nombre, email, password: hash, rol });
+        const usuario = await Usuario.create({ nombre, email, departamento, municipio, password: hash, rol });
         console.log (rol)
         
 
