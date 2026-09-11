@@ -26,8 +26,8 @@ router.get('/', verificarToken, async (req, res) => {
         const ordenes = await Orden
         .find({ usuario: req.usuario.id })
         .populate('usuario', 'nombre email')
-        .populate('productos.producto', 'nombre precio');
-        res.jsoon(ordenes);
+        .populate('productos.productos', 'nombre precio');
+        res.json(ordenes);
     } catch (err) {
         res.status(500).json({ error: err.message });
 
