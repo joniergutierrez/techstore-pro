@@ -26,19 +26,40 @@ async function cargarMisPedidos() {
 
     // 4. Renderizar cada pedido como tarjeta
     lista.innerHTML = pedidos.map(function(p) {
-      const fecha   = new Date(p.createdAt).toLocaleDateString('es-CO', { year:'numeric', month:'long', day:'numeric' });
-      const estado  = p.estado || 'pendiente';
-      const etiqueta = { pendiente:'⏳ Pendiente', enviado:'🚚 Enviado', entregado:'✅ Entregado', cancelado:'❌ Cancelado' }[estado] || estado;
-      const items   = (p.productos || []).map(function(i) {
-        return `<li><span>${i.producto ? i.producto.nombre : 'Producto'} × ${i.cantidad || 1}</span></li>`;
+      const fecha = new Date(p.createdAt).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      const estado = p.estado || 'pendiente';
+      const etiqueta = 
+      { pendiente: '⌛ Pendiente', 
+        procesando: '⚙️ Procesando',  
+        enviado: '🚚 Enviado', 
+        entregado: '✅ Entregado',
+        cancelado: '❌ Cancelado', 
+        PAGO_CONFIRMADO: '💳 Pago confirmado' 
+      }[estado] || estado;
+
+      // Clase CSS del badge — PAGO_CONFIRMADO no tiene estilo propio en el CSS,
+      // se usa el mismo verde que "entregado" para el estado de pago aprobado
+      const claseEstado = estado === 'PAGO_CONFIRMADO' ? 'entregado' : estado;
+
+
+      const items = (p.productos || []).map(function(i) {
+        return `<li><span>${i.producto ? i.producto.nombre : 'Producto'} x ${i.cantidad || 1}</span></li>`;
       }).join('');
+
       const total = p.total ? '$' + Number(p.total).toLocaleString('es-CO') : '—';
+
+      // Línea de tiempo del pedido — solo se dibuja si el estado forma parte
+      // del flujo normal post-pago (ver js/timeline.js)
+      const timelineHTML = renderTimelineEstado(estado);
+
       return `<div class="pedido-card">
         <div class="pedido-encabezado">
           <div><div class="pedido-id">ID: ${p._id}</div><div class="pedido-fecha">${fecha}</div></div>
-          <span class="badge-estado ${estado}">${etiqueta}</span>
+          <span class="badge-estado ${claseEstado}">${etiqueta}</span>
         </div>
         <ul class="pedido-productos">${items}</ul>
+        ${timelineHTML}
         <div class="pedido-total">Total: ${total}</div>
       </div>`;
     }).join('');

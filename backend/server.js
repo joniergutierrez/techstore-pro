@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const verificarToken = require('./middleware/auth');
 const productosRoutes = require('./routes/productos');
 const ordenesRoutes   = require('./routes/ordenes')
+const pagoRoutes      = require('./routes/pago');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,3 +40,5 @@ app.use('/api/productos', productosRoutes);
 
 // rutas de ordenes
 app.use('/api/ordenes', ordenesRoutes);
+
+app.use('/api/pagos', pagoRoutes);
