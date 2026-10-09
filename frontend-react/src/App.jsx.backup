@@ -1,0 +1,57 @@
+import Navbar from './Navbar.jsx'
+import ProductCard from './productCard.jsx'
+
+// Paso 2: Declarar el array de productos antes de la función App
+const productos = [
+  {
+    nombre: "Mouse Inalámbrico",
+    descripcion: "Mouse ergonómico, conexión Bluetooth",
+    precio: "$89.900",
+    imagen: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300"
+  },
+  {
+    nombre: "Teclado Mecánico",
+    descripcion: "Switches azules, retroiluminado RGB",
+    precio: "$149.900",
+    imagen: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300"
+  },
+  {
+    nombre: "Monitor 24\"",
+    descripcion: "Full HD, 75Hz, panel IPS",
+    precio: "$899.900",
+    imagen: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300"
+  },
+  {
+    nombre: "Auriculares Gaming",
+    descripcion: "Sonido surround 7.1, micrófono RGB",
+    precio: "$199.900",
+    imagen: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300"
+  }
+]
+
+function App() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      
+      <main className="container mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-6 text-center">Catálogo de Productos</h1>
+        
+        {/* Paso 3: Reemplazar las tarjetas manuales por el renderizado dinámico */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {productos.map((p) => (
+            <ProductCard
+              key={p.nombre}
+              nombre={p.nombre}
+              descripcion={p.descripcion}
+              precio={p.precio}
+              imagen={p.imagen}
+            />
+          ))}
+        </section>
+      </main>
+    </div>
+  )
+}
+
+export default App
