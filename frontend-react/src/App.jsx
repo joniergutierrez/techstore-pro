@@ -1,44 +1,37 @@
-﻿import { useState } from 'react'
+﻿import { useState, useEffect } from 'react'
 import Navbar from './Navbar.jsx'
 import ProductCard from './ProductCard.jsx'
 import Footer from './Footer.jsx'
 import Contador from './Contador.jsx'
 
-const productos = [
-  {
-    nombre: 'Mouse Inalámbrico',
-    descripcion: 'Mouse ergonómico, conexión Bluetooth',
-    precio: '$89.900',
-    imagen: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300&h=200&fit=crop',
-    stock: 12
-  },
-  {
-    nombre: 'Teclado Mecánico',
-    descripcion: 'Switches azules, retroiluminado RGB',
-    precio: '$149.900',
-    imagen: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300&h=200&fit=crop',
-    stock: 5
-  },
-  {
-    nombre: 'Monitor 24"',
-    descripcion: 'Full HD, 75Hz, panel IPS',
-    precio: '$899.900',
-    imagen: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300&h=200&fit=crop',
-    stock: 8
-  },
-  {
-    nombre: 'Audífonos Bluetooth',
-    descripcion: 'Cancelación de ruido, 20h de batería',
-    precio: '$199.900',
-    imagen: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=200&fit=crop',
-    stock: 20
-  }
-]
-
 function App() {
   const [busqueda, setBusqueda] = useState("")
+  const [productos, setProductos] = useState([])
+  const [cargando, setCargando] = useState(true)
+  const [error, setError] = useState(null)
 
-  // Optimización: filtramos una sola vez y reutilizamos el resultado
+  // FUNCIÓN CENTRALIZADA DE CARGA (Guía + Práctica Ejercicio 1)
+  const cargarProductos = () => {
+    setCargando(true)
+    setError(null)
+    
+    fetch("http://localhost:3000/api/productos")
+      .then((res) => {
+        // Mejora profesional: evita el error silencioso del Ejercicio 3
+        if (!res.ok) throw new Error("Error del servidor: " + res.status)
+        return res.json()
+      })
+      .then((datos) => setProductos(datos))
+      .catch(() => setError("No se pudo conectar al servidor. ¿Está el backend corriendo en el puerto 3000?"))
+      .finally(() => setCargando(false))
+  }
+
+  // Se ejecuta una sola vez al montar el componente (Guía Paso 2 y 3)
+  useEffect(() => {
+    cargarProductos()
+  }, [])
+
+  // Lógica de filtrado (Sesión 23)
   const productosFiltrados = productos.filter((p) => 
     p.nombre.toLowerCase().includes(busqueda.toLowerCase())
   )
@@ -48,52 +41,83 @@ function App() {
       <Navbar />
       
       <main className="container mx-auto p-6 flex-grow">
-        {/* Contador visible para probar el límite y el reset */}
+        {/* Contador visible (solicitado anteriormente) */}
         <div className="mb-8 flex justify-center">
           <Contador />
         </div>
 
-        {/* Buscador, botón de limpiar y contador de resultados */}
+        {/* Barra de controles */}
         <div className="flex flex-col sm:flex-row items-center gap-3 mb-6 justify-center">
           <input
             type="text"
             placeholder="Buscar producto..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="w-full sm:max-w-md px-4 py-2 border-2 border-slate-200 rounded-lg"
+            className="w-full sm:max-w-md px-4 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-verde transition"
           />
           
-          {/* RETO: Botón para limpiar la búsqueda */}
           <button 
             onClick={() => setBusqueda("")}
             className="w-full sm:w-auto px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition"
           >
             Limpiar
           </button>
+
+          {/* EJERCICIO 1: Botón de recarga manual */}
+          <button
+            onClick={cargarProductos}
+            disabled={cargando}
+            className="w-full sm:w-auto px-4 py-2 bg-verde text-white rounded-lg font-bold text-sm whitespace-nowrap hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {cargando ? "Cargando..." : "↻ Recargar"}
+          </button>
           
-          <p className="text-sm text-texto-dim whitespace-nowrap">
-            {productosFiltrados.length} producto(s)
-          </p>
+          {/* EJERCICIO 2: Contadores de resultados */}
+          {!cargando && !error && (
+            <div className="text-sm text-texto-dim whitespace-nowrap flex flex-col items-end min-w-[120px]">
+              <span className="font-medium text-gray-700">{productosFiltrados.length} encontrado(s)</span>
+              <span className="text-xs">({productos.length} en total en la BD)</span>
+            </div>
+          )}
         </div>
         
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {productosFiltrados.map((p) => (
-            <ProductCard
-              key={p.nombre}
-              nombre={p.nombre}
-              descripcion={p.descripcion}
-              precio={p.precio}
-              imagen={p.imagen}
-              stock={p.stock}
-            />
-          ))}
-        </section>
-
-        {/* Mensaje cuando no hay resultados */}
-        {productosFiltrados.length === 0 && (
-          <p className="text-center text-texto-dim py-10 text-lg">
-            No se encontraron productos con ese nombre.
+        {/* ESTADOS: Carga y Error (Guía Paso 3) */}
+        {cargando && (
+          <p className="text-center py-10 text-lg text-slate-500 animate-pulse">
+            Cargando productos desde el backend...
           </p>
+        )}
+        
+        {error && (
+          <p className="text-center text-red-600 py-10 text-lg font-bold bg-red-50 rounded-lg border border-red-200">
+            ⚠️ {error}
+          </p>
+        )}
+        
+        {/* RENDERIZADO DEL CATÁLOGO */}
+        {!cargando && !error && (
+          <>
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {productosFiltrados.map((p) => (
+                <ProductCard
+                  key={p.id || p.nombre}
+                  nombre={p.nombre}
+                  descripcion={p.descripcion}
+                  precio={p.precio}
+                  imagen={p.imagen}
+                  icono={p.icono}
+                  stock={p.stock || 0}
+                />
+              ))}
+            </section>
+
+            {/* Mensaje cuando no hay resultados de búsqueda */}
+            {productosFiltrados.length === 0 && (
+              <p className="text-center text-texto-dim py-10 text-lg">
+                No se encontraron productos con ese nombre.
+              </p>
+            )}
+          </>
         )}
       </main>
 
