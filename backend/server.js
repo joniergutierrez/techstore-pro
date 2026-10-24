@@ -8,6 +8,7 @@ const verificarToken = require('./middleware/auth');
 const productosRoutes = require('./routes/productos');
 const ordenesRoutes   = require('./routes/ordenes')
 const pagoRoutes      = require('./routes/pago');
+const contactoRoutes  = require('./routes/contacto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,3 +43,5 @@ app.use('/api/productos', productosRoutes);
 app.use('/api/ordenes', ordenesRoutes);
 
 app.use('/api/pagos', pagoRoutes);
+
+app.use('/api/contacto', contactoRoutes);

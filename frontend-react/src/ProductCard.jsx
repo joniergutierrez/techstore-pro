@@ -1,37 +1,28 @@
-﻿import { useCarrito } from './context/CarritoContext.jsx'
+import { useCarrito } from './context/CarritoContext.jsx'
 
 function ProductCard(props) {
   const { agregarAlCarrito } = useCarrito()
-
-  const productoParaCarrito = {
-    id: props.id || props.nombre,
-    nombre: props.nombre,
-    precio: props.precio,
-    imagen: props.imagen
+  function agregar() {
+    agregarAlCarrito({ id: props.id, nombre: props.nombre, precio: props.precio, imagen: props.imagen })
   }
-
   return (
-    <div className="flex flex-col h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 border border-gray-100">
-      <div className="mb-4 bg-gray-100 rounded-lg overflow-hidden">
-        <img src={props.imagen} alt={props.nombre} className="w-full h-64 object-cover" />
-      </div>
-      <div className="flex flex-col flex-grow gap-2">
-        {props.icono && <span className="text-2xl">{props.icono}</span>}
-        <h3 className="font-bold text-lg text-gray-800 leading-tight">{props.nombre}</h3>
-        <p className="text-texto-dim text-sm flex-grow line-clamp-2">{props.descripcion}</p>
-        <div className="flex items-end justify-between mt-3 pt-3 border-t border-gray-100">
-          <p className="text-verde font-extrabold text-lg">{props.precio}</p>
-          <p className="text-texto-dim text-xs font-medium">Stock: {props.stock || 0} und</p>
+    <article className="group relative aspect-4/5 overflow-hidden rounded-3xl bg-ink">
+      <img src={props.imagen.replace("w=400&h=250", "w=800&h=1000")} alt={props.nombre} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      <div className="absolute inset-0 bg-linear-to-t from-ink/90 via-ink/60 via-30% to-transparent to-60%"></div>
+      <span className="absolute top-4 left-4 bg-paper/90 text-ink rounded-full px-3 py-1.5 font-mono text-[11px] font-bold tracking-wider">
+        REF {String(props.id).padStart(2, "0")}
+      </span>
+      <div className="absolute inset-x-5 bottom-5 flex flex-col gap-2.5 text-paper">
+        <h3 className="font-display font-semibold text-xl leading-tight">{props.nombre}</h3>
+        <p className="text-[13px] leading-relaxed text-paper/75 line-clamp-2">{props.descripcion}</p>
+        <div className="flex items-center justify-between gap-3 mt-1.5">
+          <span className="font-mono text-[15px] font-bold">{props.precio}</span>
+          <button onClick={agregar} aria-label={"Agregar " + props.nombre + " al carrito"} className="bg-paper text-ink rounded-full px-4 py-2.5 text-[13px] font-semibold hover:bg-accent hover:text-paper transition-colors">
+            Agregar +
+          </button>
         </div>
-        
-        <button 
-          onClick={() => agregarAlCarrito(productoParaCarrito)}
-          className="w-full mt-4 bg-verde text-white py-2 rounded-lg font-bold hover:opacity-90 transition active:scale-95 flex items-center justify-center gap-2"
-        >
-          <span>🛒</span> Agregar al carrito
-        </button>
       </div>
-    </div>
+    </article>
   )
 }
 export default ProductCard
