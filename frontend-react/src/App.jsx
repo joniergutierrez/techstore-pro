@@ -6,6 +6,8 @@ import Productos from './Productos.jsx'
 import Nosotros from './Nosotros.jsx'
 import Contacto from './Contacto.jsx'
 import NotFound from './NotFound.jsx'
+import ProductoDetalle from "./ProductoDetalle.jsx";
+import ProductoModal from "./ProductoModal.jsx";
 
 function App() {
   return (
@@ -15,9 +17,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/productos" element={<Productos />} />
+          <Route path="/productos/:id" element={<ProductoDetalle />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/productos/:id" element={<ProductoDetalle />} />
         </Routes>
       </main>
       <Footer />

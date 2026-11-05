@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import ProductCard from "./ProductCard.jsx"
+import ProductoModal from "./ProductoModal.jsx"
 
 function Home() {
   const navegar = useNavigate()
   const [productos, setProductos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
+  const [seleccionado, setSeleccionado] = useState(null)
 
   useEffect(() => {
     fetch("http://localhost:3000/api/productos")
@@ -43,14 +45,17 @@ function Home() {
           </div>
         </div>
         {destacado && (
-          <div className="relative w-full max-w-md lg:w-105 shrink-0 aspect-square bg-gray-50 rounded-[20px] overflow-hidden">
+          <Link
+            to={"/productos/" + destacado._id}
+            className="relative block w-full max-w-md lg:w-105 shrink-0 aspect-square bg-gray-50 rounded-[20px] overflow-hidden hover:opacity-90 transition-opacity"
+          >
             <img src={destacado.imagen} alt={destacado.nombre} className="w-full h-full object-cover" />
             <div className="absolute left-5 bottom-5 bg-paper rounded-card py-3.5 px-4 shadow-float">
               <p className="text-[11px] uppercase tracking-wider text-gray-500">Destacado</p>
               <p className="font-semibold text-sm">{destacado.nombre}</p>
               <p className="font-mono text-[13px] font-semibold text-accent mt-1">{destacado.precio}</p>
             </div>
-          </div>
+          </Link>
         )}
       </section>
       <section>
@@ -62,10 +67,23 @@ function Home() {
         {error && <p className="text-accent-dark">{error}</p>}
         {!cargando && !error && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {catalogo.map((p) => (<ProductCard key={p.id} id={p.id} nombre={p.nombre} descripcion={p.descripcion} precio={p.precio} imagen={p.imagen} />))}
+            {catalogo.map((p) => (
+              <ProductCard
+                key={p.id}
+                id={p.id}
+                nombre={p.nombre}
+                descripcion={p.descripcion}
+                precio={p.precio}
+                imagen={p.imagen}
+                onVer={() => setSeleccionado(p)}
+              />
+            ))}
           </div>
         )}
       </section>
+      {seleccionado && (
+        <ProductoModal producto={seleccionado} onCerrar={() => setSeleccionado(null)} />
+      )}
     </div>
   )
 }
