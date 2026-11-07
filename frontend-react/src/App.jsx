@@ -8,6 +8,8 @@ import Contacto from './Contacto.jsx'
 import NotFound from './NotFound.jsx'
 import ProductoDetalle from "./ProductoDetalle.jsx";
 import ProductoModal from "./ProductoModal.jsx";
+import Login from "./Login.jsx";
+import Registro from "./Registro.jsx";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
           <Route path="/productos/:id" element={<ProductoDetalle />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/productos/:id" element={<ProductoDetalle />} />
         </Routes>

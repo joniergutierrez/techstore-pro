@@ -1,47 +1,41 @@
-// 1 importar dependencias 
 const express = require('express');
 const bcrypt  = require('bcryptjs');
 const jwt     = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
 const router  = express.Router();
 
-//2 POST crear cuenta
 router.post('/registro', async (req, res) => {
     try {
-        const { nombre, email, departamento, municipio, password, rol } = req.body;
-
-        // verificar que el email no exista ya
+        const { nombre, email, password, departamento, municipio } = req.body;
         const existe = await Usuario.findOne({ email });
-        if (existe) return res.status(400).json({ error: 'el email ya esta registrado' });
+        if (existe) return res.status(400).json({ error: 'El email ya está registrado' });
 
-        // encriptar la coontraseña con 10 rondas de bcrypt
         const hash = await bcrypt.hash(password, 10);
 
-        // guardar el ususario con la contraseña encriptada
-        const usuario = await Usuario.create({ nombre, email, departamento, municipio, password: hash, rol });
-        console.log (rol)
-        
+        const usuario = await Usuario.create({
+            nombre,
+            email,
+            departamento,
+            municipio,
+            password: hash,
+            rol: 'cliente'
+        });
 
-        res.status(201).json({ mensaje: 'usuario creado correctamente', id: usuario._id });
+        res.status(201).json({ mensaje: 'Usuario creado correctamente', id: usuario._id });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
 });
 
-// 3 POST iniciar sesion y recuibir token
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        // buscar ususario por email
         const usuario = await Usuario.findOne({ email });
-        if (!usuario) return res.status(401).json({ error: 'email o contraseña incorrectos' });
+        if (!usuario) return res.status(401).json({ error: 'Email o contraseña incorrectos' });
 
-        // comparar la contraseña con el hash guardado en atlas
         const valida = await bcrypt.compare(password, usuario.password);
-        if (!valida) return res.status(401).json({ error: 'email o contraseña incorrectos' });
+        if (!valida) return res.status(401).json({ error: 'Email o contraseña incorrectos' }); 
 
-        // crear el token JWT - dura 24 horas
         const token = jwt.sign(
             { id: usuario._id, email: usuario.email, rol: usuario.rol },
             process.env.JWT_SECRET,
@@ -55,16 +49,14 @@ router.post('/login', async (req, res) => {
 });
 
 const verificarToken = require('../middleware/auth');
-
 router.get('/perfil', verificarToken, async (req, res) => {
-    try {
-    // req.usuario.id viene del JWT decodificado por verificarToken
-    // .select('-password') excluye el hash — NUNCA enviar la contraseña al frontend
+  try {
     const usuario = await Usuario.findById(req.usuario.id).select('-password');
     if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
     res.json(usuario);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { 
+      res.status(500).json({ error: err.message }); 
+  }
 });
 
-//4 exportar el souter
 module.exports = router;

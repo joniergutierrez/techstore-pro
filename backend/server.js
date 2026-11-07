@@ -18,13 +18,19 @@ app.use(cors());
 app.use(express.json());
 
 
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('✅ conectado a MongoDB Atlas'))
+// 4. Conectar con MongoDB: local o Atlas, según DB_MODO en el .env
+const modo = process.env.DB_MODO === 'local' ? 'local' : 'atlas';
+const uri  = modo === 'local'
+? process.env.MONGODB_URI_LOCAL
+: process.env.MONGODB_URI_ATLAS;
+
+mongoose.connect(uri)
+.then(() => console.log('✅ Conectado a MongoDB (' + modo + ')'))
     .catch((err) => console.error('❌ error de conexion', err));
 
 //9    
 app.get('/', (req, res) => {
-    res.json({mensaje: 'Servidor TechStore pro ✅'})
+    res.json({mensaje: 'Servidor TechStore pro ✅', baseDeDatos: modo })
 });
 
 
