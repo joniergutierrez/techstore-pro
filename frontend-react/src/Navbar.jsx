@@ -21,17 +21,14 @@ function Navbar() {
       </ul>
       
       <div className="flex items-center gap-4">
-        <div className="relative flex items-center gap-2">
+        <Link to="/carrito" className="relative flex items-center gap-2 hover:opacity-80 transition">
           <span className="text-2xl">🛒</span>
           {carrito.length > 0 && (
-            <>
-              <span className="absolute -top-2 -right-2 bg-accent text-paper text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-bounce shadow-sm">
-                {carrito.length}
-              </span>
-              <button onClick={vaciarCarrito} className="text-xs text-gray-500 hover:text-accent font-bold ml-4 transition" title="Vaciar carrito">🗑️</button>
-            </>
+            <span className="absolute -top-2 -right-2 bg-accent text-paper text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-bounce shadow-sm">
+              {carrito.reduce((acc, prod) => acc + prod.cantidad, 0)}
+            </span>
           )}
-        </div>
+        </Link>
 
         {usuario ? (
           <div className="flex items-center gap-3">
