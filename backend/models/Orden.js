@@ -1,26 +1,25 @@
-
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const ordenShema = new Schema({
+const ordenSchema = new Schema({
 
     // ¿quien hizo la orden?
     usuario: {
-        type: mongoose.SchemaTypes.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,   // ✅ Corregido: era SchemaTypes
         ref: 'Usuario',
         required: true
     },
 
-    //arreglo de productos con calidad
+    // arreglo de productos con cantidad
     productos: [{
-        productos: {
+        producto: {                              // ✅ Corregido: era "productos"
             type: Schema.Types.ObjectId,
             ref: 'Producto'
         },
-        calidad: { type: Number, required: true, min: 1 }
+        cantidad: { type: Number, required: true, min: 1 }  // ✅ Corregido: era "calidad"
     }],
 
-    // total calculado en el frontend o en la ruta
+    // total calculado en el servidor
     total: { type: Number, required: true },
 
     // estado del ciclo de vida de la orden
@@ -30,11 +29,11 @@ const ordenShema = new Schema({
         enum: ['pendiente', 'procesando', 'enviado', 'entregado', 'PAGO_CONFIRMADO']
     },
 
-     // Datos de Wompi — se llenan solo cuando el pago fue aprobado
+    // Datos de Wompi — se llenan solo cuando el pago fue aprobado
     wompiTransactionId: { type: String },
     wompiReference:     { type: String }
 
-}, { timestamps: true }); // agrega createdAt y updateAt
+}, { timestamps: true });
 
-const Orden = mongoose.model('Orden', ordenShema);
+const Orden = mongoose.model('Orden', ordenSchema);
 module.exports = Orden;
