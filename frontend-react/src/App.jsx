@@ -11,6 +11,10 @@ import Registro from './pages/Registro.jsx'
 import Carrito from './pages/Carrito.jsx'
 import PagoResultado from './pages/PagoResultado.jsx' // <-- AGREGA ESTO
 import MisPedidos from "./pages/MisPedidos.jsx"
+import Cuenta from "./pages/Cuenta.jsx"
+import CuentaResumen from "./pages/CuentaResumen.jsx"
+import CuentaPerfil from "./pages/CuentaPerfil.jsx"
+import { Navigate } from "react-router-dom"
 import NotFound from './pages/NotFound.jsx'
 
 function App() {
@@ -29,7 +33,12 @@ function App() {
           <Route path="/pago/:referencia" element={<PagoResultado />} />
 
           <Route path="/registro" element={<Registro />} />
-          <Route path="/mis-pedidos" element={<MisPedidos />} />
+                    <Route path="/cuenta" element={<Cuenta />}>
+            <Route index element={<CuentaResumen />} />
+            <Route path="perfil" element={<CuentaPerfil />} />
+            <Route path="pedidos" element={<MisPedidos />} />
+          </Route>
+          <Route path="/mis-pedidos" element={<Navigate to="/cuenta/pedidos" replace />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

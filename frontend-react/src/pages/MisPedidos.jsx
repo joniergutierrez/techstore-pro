@@ -1,69 +1,29 @@
-import { useState, useEffect, useContext } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../context/AuthContext.jsx"
-import TimelinePedido, { textoEstado } from "../components/TimelinePedido.jsx"
+import { Link } from "react-router-dom";
+import useApi from "../hooks/useApi.js";
+import TimelinePedido, { textoEstado } from "../components/TimelinePedido.jsx";
 
 function numeroAPrecio(numero) {
   return "$" + Number(numero).toLocaleString("es-CO")
 }
 
 function MisPedidos() {
-  const { usuario, logout } = useAuth()
-  const navegar = useNavigate()
-  const [pedidos, setPedidos] = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState("")
+  const { datos: pedidos, cargando, error } = useApi("/api/ordenes");
 
-  useEffect(() => {
-    if (!usuario) return
+  if (cargando) return <p className="py-16 text-center text-gray-700">Cargando tus pedidos…</p>;
+  if (error) return <p className="py-16 text-center text-accent-dark">{error}</p>;
 
-    async function cargar() {
-      try {
-        const respuesta = await fetch("http://localhost:3000/api/ordenes", {
-          headers: { Authorization: "Bearer " + usuario.token },
-        })
-
-        if (respuesta.status === 401 || respuesta.status === 403) {
-          logout()
-          navegar("/login", { state: { aviso: "Tu sesión terminó. Ingresa de nuevo.", desde: "/mis-pedidos" } })
-          return
-        }
-        if (!respuesta.ok) throw new Error("Respuesta no válida")
-
-        setPedidos(await respuesta.json())
-      } catch {
-        setError("No se pudieron cargar tus pedidos. Revisa que el backend esté encendido.")
-      } finally {
-        setCargando(false)
-      }
-    }
-    cargar()
-  }, [usuario, logout, navegar])
-
-  if (!usuario) {
-    return (
-      <section className="max-w-md mx-auto text-center flex flex-col items-center gap-5 py-16">
-        <h1 className="font-display font-bold text-4xl tracking-tighter">Inicia sesión para ver tus pedidos<span className="text-accent">.</span></h1>
-        <Link to="/login" state={{ aviso: "Inicia sesión para ver tus pedidos", desde: "/mis-pedidos" }} className="bg-ink text-paper px-6 py-3 rounded-card text-sm font-semibold hover:bg-accent transition-colors">Ingresar</Link>
-      </section>
-    )
-  }
-
-  if (cargando) return <p className="py-16 text-center text-gray-700">Cargando tus pedidos…</p>
-  if (error) return <p className="py-16 text-center text-accent-dark">{error}</p>
-
-  if (pedidos.length === 0) {
+  if (!pedidos || pedidos.length === 0) {
     return (
       <section className="max-w-md mx-auto text-center flex flex-col items-center gap-5 py-16">
         <h1 className="font-display font-bold text-4xl tracking-tighter">Todavía no tienes pedidos<span className="text-accent">.</span></h1>
         <p className="text-gray-700">Cuando pagues una compra, aparecerá aquí.</p>
         <Link to="/productos" className="bg-ink text-paper px-6 py-3 rounded-card text-sm font-semibold hover:bg-accent transition-colors">Ver productos</Link>
       </section>
-    )
+    );
   }
 
   return (
-    <div className="flex flex-col gap-8 max-w-4xl mx-auto py-10">
+    <div className="flex flex-col gap-8">
       <section>
         <p className="font-mono text-xs uppercase tracking-widest text-gray-500">Cuenta</p>
         <h1 className="font-display font-bold text-5xl tracking-tighter mt-4">Mis pedidos<span className="text-accent">.</span></h1>
@@ -97,7 +57,7 @@ function MisPedidos() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
-export default MisPedidos
+export default MisPedidos;

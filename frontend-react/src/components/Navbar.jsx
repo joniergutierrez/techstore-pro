@@ -32,7 +32,7 @@ function Navbar() {
 
         {usuario ? (
           <div className="flex items-center gap-4">
-            <Link to="/mis-pedidos" className="text-sm font-medium text-gray-700 hover:text-ink transition-colors">Mis pedidos</Link>
+            <Link to="/cuenta" className="text-sm font-medium text-gray-700 hover:text-ink transition-colors">Mi cuenta</Link>
             <span className="text-sm font-semibold text-gray-700">Hola, {usuario.nombre}</span>
             <button onClick={logout} className="bg-ink text-paper py-2 px-5 rounded-lg font-display font-bold text-sm hover:bg-accent transition">
               Salir
